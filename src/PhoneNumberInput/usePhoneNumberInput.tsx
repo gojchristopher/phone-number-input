@@ -54,8 +54,8 @@ export function usePhoneNumberInput({
 				...props.style,
 				...popper.styles,
 
-				top: popper.y + "px",
-				left: popper.x + "px",
+				top: `${popper.y}px`,
+				left: `${popper.x}px`,
 				position: popper.strategy,
 			},
 		});
@@ -79,7 +79,7 @@ export function usePhoneNumberInput({
 				popper.setActiveIndex(null);
 
 				inputRef.current?.focus();
-				onChange("+" + item.areaCode);
+				onChange(prefix + item.areaCode);
 				props.onClick?.(e);
 			},
 
@@ -106,10 +106,8 @@ export function usePhoneNumberInput({
 	const getRootProps = (props: HtmlDivProps = {}): HtmlDivProps => ({
 		...props,
 
-		ref: mergeRefs(
-			props.ref,
-			popper.refs.setPositionReference as unknown as React.Ref<any>,
-		),
+		/* TODO: merge virtual ref */
+		ref: popper.refs.setPositionReference,
 	});
 
 	return {
@@ -126,3 +124,5 @@ export function usePhoneNumberInput({
 		getInputProps,
 	};
 }
+
+const prefix = "+";
