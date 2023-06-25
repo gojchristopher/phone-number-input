@@ -3,9 +3,9 @@ import { FloatingFocusManager, FloatingPortal, useMergeRefs } from "@floating-ui
 import { CheckCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import { parsePhoneNumber } from "awesome-phonenumber";
 import * as React from "react";
-import { countries } from "../constants/countries";
-import { Assign } from "../types";
 import { Options } from "./components";
+import { countries } from "./countries";
+import { Assign } from "./types";
 import { UsePhoneNumberInputProps, usePhoneNumberInput } from "./usePhoneNumberInput";
 
 export type PhoneNumberInputProps = Assign<

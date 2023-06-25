@@ -34,7 +34,7 @@ async function main() {
 		};
 	});
 
-	const destination = path.join(process.cwd(), "src/constants/countries.ts");
+	const destination = path.join(process.cwd(), "src/PhoneNumberInput/countries.ts");
 	const content = prettier.format(
 		`export const countries = ${JSON.stringify(countries)}`,
 		{
