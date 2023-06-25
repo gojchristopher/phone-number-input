@@ -1,20 +1,16 @@
-import { PhoneSelect } from "./components/PhoneNumberInput";
-import { Flex } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import { PhoneNumberInput } from "./PhoneNumberInput";
 
-function App() {
-  return (
-    <Flex
-      align="center"
-      border="1px solid black"
-      w="full"
-      h="100vh"
-      justify="center"
-    >
-      <Flex>
-        <PhoneSelect />
-      </Flex>
-    </Flex>
-  );
+export default function App() {
+	return (
+		<Box
+			p={{
+				base: 8,
+				md: 12,
+				lg: 16,
+			}}
+		>
+			<PhoneNumberInput />
+		</Box>
+	);
 }
-
-export default App;
