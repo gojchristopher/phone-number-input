@@ -25,7 +25,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 
 		const inputRef = React.useRef<HTMLInputElement>(null);
 		const mergedRef = useMergeRefs([ref, inputRef]);
-		const [regionCode, setRegionCode] = React.useState("Code");
+		const [regionCode, setRegionCode] = React.useState<string>();
 
 		return (
 			<>
@@ -43,7 +43,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 				>
 					<chakra.button
 						ref={numberInput.refs.setReference}
-						w="75px"
+						w="80px"
 						px={3}
 						bg="gray.50"
 						gap="6px"
@@ -54,12 +54,13 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 						{...numberInput.getReferenceProps()}
 					>
 						<chakra.span flexGrow={1} fontSize="16px" lineHeight="24px">
-							{regionCode}
+							{regionCode ?? "Code"}
 						</chakra.span>
 						<chakra.svg
 							as={ChevronDownIcon}
 							w={4}
 							h={4}
+							flexShrink={0}
 							transition="all 250ms ease-in-out"
 							transform={numberInput.isOpen ? "rotate(180deg)" : undefined}
 						/>
