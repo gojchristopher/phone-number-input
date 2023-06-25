@@ -3,7 +3,6 @@ import { FloatingFocusManager, FloatingPortal, useMergeRefs } from "@floating-ui
 import { CheckCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import { parsePhoneNumber } from "awesome-phonenumber";
 import * as React from "react";
-import { Options } from "./components";
 import { countries } from "./countries";
 import { Assign } from "./types";
 import { UsePhoneNumberInputProps, usePhoneNumberInput } from "./usePhoneNumberInput";
@@ -93,7 +92,14 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 							initialFocus={-1}
 							visuallyHiddenDismiss
 						>
-							<Options
+							<chakra.div
+								bg="white"
+								border="1px"
+								borderColor="gray.200"
+								rounded="lg"
+								maxW="315px"
+								overflowY="auto"
+								zIndex="modal"
 								{...numberInput.getFloatingProps({
 									ref: numberInput.refs.setFloating,
 									style: {
@@ -112,8 +118,8 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 										<Flex
 											key={index}
 											w="full"
-											py="10px"
-											px="14px"
+											py={2}
+											px={3}
 											gap={2}
 											cursor="pointer"
 											alignItems="center"
@@ -149,7 +155,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 										</Flex>
 									);
 								})}
-							</Options>
+							</chakra.div>
 						</FloatingFocusManager>
 					)}
 				</FloatingPortal>
