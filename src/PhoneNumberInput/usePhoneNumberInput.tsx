@@ -1,19 +1,9 @@
 import { useControllableState } from "@chakra-ui/react";
-import {
-	autoUpdate,
-	flip,
-	offset,
-	shift,
-	size,
-	useClick,
-	useDismiss,
-	useFloating,
-	useInteractions,
-	useListNavigation,
-	useRole,
-	useTransitionStyles,
-} from "@floating-ui/react";
-import { useRef, useState } from "react";
+import { parsePhoneNumber } from "awesome-phonenumber";
+import * as React from "react";
+import { countries } from "./countries";
+import { mergeRefs } from "./mergeRefs";
+import { usePopper } from "./usePopper";
 
 interface Option {
 	label: string;
@@ -30,6 +20,10 @@ export interface UsePhoneNumberInputProps {
 	matcher?: Matcher;
 }
 
+type TItem = (typeof countries)[number];
+type HtmlDivProps = React.ComponentPropsWithRef<"div">;
+type HtmlInputProps = React.ComponentPropsWithRef<"input">;
+
 export function usePhoneNumberInput({
 	options = [],
 	matcher = (option, kw) => {
@@ -43,69 +37,92 @@ export function usePhoneNumberInput({
 		defaultValue: props.defaultValue ?? "",
 	});
 
-	const [activeIndex, setActiveIndex] = useState<number | null>(null);
-	const [isOpen, setOpen] = useState(false);
+	const items = options.filter((option) => matcher(option, value));
 
-	const floating = useFloating<HTMLInputElement>({
-		open: isOpen,
-		onOpenChange: setOpen,
-		strategy: "fixed",
-		placement: "bottom-start",
-		whileElementsMounted: autoUpdate,
-		middleware: [
-			offset(4),
-			flip(),
-			shift({
-				padding: 4,
+	const popper = usePopper();
+
+	const inputRef = React.useRef<HTMLInputElement>(null);
+	const [regionCode, setRegionCode] = React.useState<string>();
+
+	const getFloatingProps = (props: HtmlDivProps = {}) =>
+		popper.getFloatingProps({
+			...props,
+
+			ref: mergeRefs(props.ref, popper.refs.setFloating),
+
+			style: {
+				...props.style,
+				...popper.styles,
+
+				top: popper.y + "px",
+				left: popper.x + "px",
+				position: popper.strategy,
+			},
+		});
+
+	const getItemProps = ({
+		item,
+		index,
+		...props
+	}: HtmlDivProps & { item: TItem; index: number }): HtmlDivProps =>
+		popper.getItemProps({
+			...props,
+
+			ref: mergeRefs(props.ref, (node: HTMLDivElement) => {
+				popper.listRef.current[index] = node;
 			}),
-			size({
-				padding: 16,
-				apply({ availableHeight, elements }) {
-					Object.assign(elements.floating.style, {
-						maxHeight: `${availableHeight}px`,
-					});
-				},
-			}),
-		],
-	});
 
-	const role = useRole(floating.context, { role: "listbox" });
-	const click = useClick(floating.context);
-	const dismiss = useDismiss(floating.context);
-	const listRef = useRef<Array<HTMLElement | null>>([]);
-	const listNav = useListNavigation(floating.context, {
-		listRef,
-		activeIndex,
-		onNavigate: setActiveIndex,
-		virtual: true,
-		loop: true,
-	});
+			onClick(e: React.MouseEvent<HTMLDivElement>) {
+				setRegionCode(item.code);
 
-	const interactions = useInteractions([role, dismiss, click, listNav]);
+				popper.setOpen(false);
+				popper.setActiveIndex(null);
 
-	const transition = useTransitionStyles(floating.context, {
-		duration: {
-			open: 100,
-			close: 50,
+				inputRef.current?.focus();
+				onChange("+" + item.areaCode);
+				props.onClick?.(e);
+			},
+
+			"aria-selected": popper.activeIndex === index || undefined,
+		});
+
+	const getInputProps = (props: HtmlInputProps = {}): HtmlInputProps => ({
+		...props,
+
+		value,
+		onChange(e) {
+			const parsed = parsePhoneNumber(e.target.value, {
+				regionCode,
+			});
+
+			if (parsed.number) {
+				onChange(parsed.number.international);
+			}
+
+			props.onChange?.(e);
 		},
 	});
 
-	const items = options.filter((option) => {
-		return matcher(option, value);
+	const getRootProps = (props: HtmlDivProps = {}): HtmlDivProps => ({
+		...props,
+
+		ref: mergeRefs(
+			props.ref,
+			popper.refs.setPositionReference as unknown as React.Ref<any>,
+		),
 	});
 
 	return {
-		...floating,
-		...interactions,
-		...transition,
+		...popper,
 
 		items,
-		isOpen,
-		setOpen,
 		value,
 		onChange,
-		activeIndex,
-		setActiveIndex,
-		listRef,
+		regionCode,
+		setRegionCode,
+		getRootProps,
+		getItemProps,
+		getFloatingProps,
+		getInputProps,
 	};
 }
