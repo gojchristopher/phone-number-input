@@ -5,10 +5,8 @@ import { countries } from "./countries";
 import { Assign } from "./types";
 import { UsePhoneNumberInputProps, usePhoneNumberInput } from "./usePhoneNumberInput";
 
-export type PhoneNumberInputProps = Assign<
-	HTMLChakraProps<"input">,
-	UsePhoneNumberInputProps
->;
+export interface PhoneNumberInputProps
+	extends Assign<HTMLChakraProps<"input">, UsePhoneNumberInputProps> {}
 
 export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 	({ value, onChange, defaultValue, matcher, options }, ref) => {
