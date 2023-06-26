@@ -34,6 +34,7 @@ export function usePaginatedCountries(resetSignalToAvoidPerfIssues?: boolean) {
 	useEffect(() => {
 		if (resetSignalToAvoidPerfIssues) {
 			setRows(countriesChunk[0]);
+			setPage(1);
 		}
 	}, [resetSignalToAvoidPerfIssues]);
 
