@@ -53,18 +53,27 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 					_focusWithin={{
 						borderColor: "blue.300",
 					}}
+					data-group
 					{...numberInput.getRootProps()}
 				>
 					<chakra.button
 						w="75px"
 						px={3}
-						bg="gray.50"
 						gap="6px"
 						display="flex"
 						alignSelf="stretch"
 						alignItems="center"
 						outline="none"
 						cursor="pointer"
+						borderRight="1px"
+						borderColor="gray.200"
+						transition="all 250ms ease-in-out"
+						_groupFocus={{
+							borderColor: "blue.300",
+						}}
+						_groupFocusWithin={{
+							borderColor: "blue.300",
+						}}
 						{...numberInput.getReferenceProps()}
 					>
 						<chakra.span flexGrow={1} fontSize="16px" lineHeight="24px">
@@ -84,6 +93,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 						px={2}
 						py={3}
 						outline="none"
+						flexGrow={1}
 						_placeholder={{
 							color: "gray.400",
 						}}
