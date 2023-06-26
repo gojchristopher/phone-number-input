@@ -42,18 +42,17 @@ export function usePopper() {
 	});
 
 	const role = useRole(floating.context, { role: "listbox" });
-	const click = useClick(floating.context);
+	const click = useClick(floating.context, { event: "mousedown" });
 	const dismiss = useDismiss(floating.context);
 	const listRef = React.useRef<(HTMLElement | null)[]>([]);
 	const listNav = useListNavigation(floating.context, {
 		listRef,
 		activeIndex,
 		onNavigate: setActiveIndex,
-		virtual: true,
 		loop: true,
 	});
 
-	const interactions = useInteractions([role, dismiss, click, listNav]);
+	const interactions = useInteractions([dismiss, role, listNav, click]);
 
 	const transition = useTransitionStyles(floating.context, {
 		duration: {

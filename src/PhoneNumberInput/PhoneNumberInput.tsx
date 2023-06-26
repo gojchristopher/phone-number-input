@@ -9,13 +9,11 @@ export interface PhoneNumberInputProps
 	extends Assign<HTMLChakraProps<"input">, UsePhoneNumberInputProps> {}
 
 export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
-	({ value, onChange, defaultValue, matcher, options }, ref) => {
+	({ value, onChange, defaultValue }, ref) => {
 		const numberInput = usePhoneNumberInput({
 			value,
 			onChange,
 			defaultValue,
-			matcher,
-			options,
 		});
 
 		return (
@@ -27,13 +25,17 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 					rounded="lg"
 					overflow="hidden"
 					transition="all 250ms ease-in-out"
+					_focus={{
+						borderColor: "blue.300",
+					}}
 					_focusWithin={{
 						borderColor: "blue.300",
 					}}
+					data-focus={numberInput.isOpen || undefined}
 					{...numberInput.getRootProps()}
 				>
 					<chakra.button
-						w="80px"
+						w="75px"
 						px={3}
 						bg="gray.50"
 						gap="6px"
@@ -41,10 +43,11 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 						alignSelf="stretch"
 						alignItems="center"
 						outline="none"
+						cursor="pointer"
 						{...numberInput.getReferenceProps()}
 					>
 						<chakra.span flexGrow={1} fontSize="16px" lineHeight="24px">
-							{numberInput.regionCode ?? "Code"}
+							{numberInput.regionCode || "Code"}
 						</chakra.span>
 						<chakra.svg
 							as={ChevronDownIcon}
@@ -69,12 +72,13 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 				</chakra.div>
 
 				<FloatingPortal>
-					{numberInput.isOpen && (
+					{numberInput.isMounted && (
 						<FloatingFocusManager
 							context={numberInput.context}
-							initialFocus={-1}
-							visuallyHiddenDismiss
 							returnFocus={false}
+							initialFocus={-1}
+							modal={false}
+							visuallyHiddenDismiss
 						>
 							<chakra.div
 								bg="white"
@@ -84,6 +88,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 								maxW="315px"
 								overflowY="auto"
 								zIndex="modal"
+								outline="none"
 								{...numberInput.getFloatingProps()}
 							>
 								{countries.slice(0, 25).map((item, index) => {
@@ -96,6 +101,10 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 											gap={2}
 											cursor="pointer"
 											alignItems="center"
+											outline="none"
+											_selected={{
+												bg: "gray.50",
+											}}
 											{...numberInput.getItemProps({
 												item,
 												index,
