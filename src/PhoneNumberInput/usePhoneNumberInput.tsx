@@ -40,6 +40,24 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 	const inputRef = React.useRef<HTMLInputElement>(null);
 	const [regionCode, setRegionCode] = React.useState("");
 
+	const getRootProps = (userProps: HtmlDivProps = {}): HtmlDivProps => ({
+		...userProps,
+
+		ref: userProps.ref
+			? mergeRefs([userProps.ref, popper.refs.setPositionReference])
+			: popper.refs.setPositionReference,
+	});
+
+	const getReferenceProps = (userProps: HtmlButtonProps = {}): HtmlButtonProps => {
+		return popper.getReferenceProps({
+			ref: userProps.ref
+				? mergeRefs([userProps.ref, popper.refs.setReference])
+				: popper.refs.setReference,
+
+			"aria-autocomplete": "none",
+		});
+	};
+
 	const getFloatingProps = (userProps: HtmlDivProps = {}) => {
 		return popper.getFloatingProps({
 			...userProps,
@@ -106,24 +124,6 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 			userProps.onChange?.(e);
 		},
 	});
-
-	const getRootProps = (userProps: HtmlDivProps = {}): HtmlDivProps => ({
-		...userProps,
-
-		ref: userProps.ref
-			? mergeRefs([userProps.ref, popper.refs.setPositionReference])
-			: popper.refs.setPositionReference,
-	});
-
-	const getReferenceProps = (userProps: HtmlButtonProps = {}): HtmlButtonProps => {
-		return popper.getReferenceProps({
-			ref: userProps.ref
-				? mergeRefs([userProps.ref, popper.refs.setReference])
-				: popper.refs.setReference,
-
-			"aria-autocomplete": "none",
-		});
-	};
 
 	return {
 		...popper,
