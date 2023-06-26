@@ -48,7 +48,9 @@ export function usePhoneNumberInput({
 		popper.getFloatingProps({
 			...props,
 
-			ref: mergeRefs(props.ref, popper.refs.setFloating),
+			ref: props.ref
+				? mergeRefs([props.ref, popper.refs.setFloating])
+				: popper.refs.setFloating,
 
 			style: {
 				...props.style,
@@ -64,13 +66,15 @@ export function usePhoneNumberInput({
 		item,
 		index,
 		...props
-	}: HtmlDivProps & { item: TItem; index: number }): HtmlDivProps =>
-		popper.getItemProps({
+	}: HtmlDivProps & { item: TItem; index: number }): HtmlDivProps => {
+		const localRef = (node: HTMLDivElement) => {
+			popper.listRef.current[index] = node;
+		};
+
+		return popper.getItemProps({
 			...props,
 
-			ref: mergeRefs(props.ref, (node: HTMLDivElement) => {
-				popper.listRef.current[index] = node;
-			}),
+			ref: props.ref ? mergeRefs([props.ref, localRef]) : localRef,
 
 			onClick(e: React.MouseEvent<HTMLDivElement>) {
 				setRegionCode(item.code);
@@ -78,16 +82,19 @@ export function usePhoneNumberInput({
 				popper.setOpen(false);
 				popper.setActiveIndex(null);
 
-				inputRef.current?.focus();
 				onChange(prefix + item.areaCode);
+				inputRef.current?.focus();
 				props.onClick?.(e);
 			},
 
 			"aria-selected": popper.activeIndex === index || undefined,
 		});
+	};
 
 	const getInputProps = (props: HtmlInputProps = {}): HtmlInputProps => ({
 		...props,
+
+		ref: props.ref ? mergeRefs([inputRef, props.ref]) : inputRef,
 
 		value,
 		onChange(e) {
@@ -106,8 +113,9 @@ export function usePhoneNumberInput({
 	const getRootProps = (props: HtmlDivProps = {}): HtmlDivProps => ({
 		...props,
 
-		/* TODO: merge virtual ref */
-		ref: popper.refs.setPositionReference,
+		ref: props.ref
+			? mergeRefs([props.ref, popper.refs.setPositionReference])
+			: popper.refs.setPositionReference,
 	});
 
 	return {

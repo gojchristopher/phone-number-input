@@ -1,19 +1,15 @@
-type PossibleRef<T> = React.Ref<T> | undefined;
+import type * as React from "react";
 
-type Nil = null | undefined;
-
-function isNil(subject: unknown): subject is Nil {
-	return subject === undefined || subject === null;
-}
-
-function assign<T>(ref: PossibleRef<T>, value: T) {
-	if (typeof ref === "function") {
-		ref(value);
-	} else if (!isNil(ref)) {
-		(ref as React.MutableRefObject<T>).current = value;
-	}
-}
-
-export function mergeRefs<T>(...refs: PossibleRef<T>[]) {
-	return (node: T) => refs.forEach((ref) => assign(ref, node));
+export function mergeRefs<T = any>(
+	refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
+): React.RefCallback<T> {
+	return (value) => {
+		refs.forEach((ref) => {
+			if (typeof ref === "function") {
+				ref(value);
+			} else if (ref != null) {
+				(ref as React.MutableRefObject<T | null>).current = value;
+			}
+		});
+	};
 }
