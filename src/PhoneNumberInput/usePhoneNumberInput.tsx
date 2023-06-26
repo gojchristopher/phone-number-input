@@ -13,9 +13,12 @@ export interface UsePhoneNumberInputProps {
 }
 
 type TItem = (typeof countries)[number];
-type HtmlDivProps = React.ComponentPropsWithRef<"div">;
-type HtmlInputProps = React.ComponentPropsWithRef<"input">;
-type HtmlButtonProps = React.ComponentPropsWithRef<"button">;
+type AnyProps = Record<string, any>;
+type HtmlDivProps = React.ComponentPropsWithRef<"div"> & AnyProps;
+type HtmlInputProps = React.ComponentPropsWithRef<"input"> & AnyProps;
+type HtmlButtonProps = React.ComponentPropsWithRef<"button"> & AnyProps;
+
+const PHONENUMBER_PREFIX = "+";
 
 export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 	const [value, onChange] = useControllableState({
@@ -40,13 +43,17 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 	const inputRef = React.useRef<HTMLInputElement>(null);
 	const [regionCode, setRegionCode] = React.useState("");
 
-	const getRootProps = (userProps: HtmlDivProps = {}): HtmlDivProps => ({
-		...userProps,
+	const getRootProps = (userProps: HtmlDivProps = {}): HtmlDivProps => {
+		return {
+			...userProps,
 
-		ref: userProps.ref
-			? mergeRefs([userProps.ref, popper.refs.setPositionReference])
-			: popper.refs.setPositionReference,
-	});
+			ref: userProps.ref
+				? mergeRefs([userProps.ref, popper.refs.setPositionReference])
+				: popper.refs.setPositionReference,
+
+			"data-focus": popper.isOpen || undefined,
+		};
+	};
 
 	const getReferenceProps = (userProps: HtmlButtonProps = {}): HtmlButtonProps => {
 		return popper.getReferenceProps({
@@ -92,7 +99,7 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 			popper.setOpen(false);
 			popper.setActiveIndex(null);
 
-			onChange(prefix + item.areaCode);
+			onChange(PHONENUMBER_PREFIX + item.areaCode);
 			inputRef.current?.focus();
 		}
 
@@ -152,5 +159,3 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 		getReferenceProps,
 	};
 }
-
-const prefix = "+";

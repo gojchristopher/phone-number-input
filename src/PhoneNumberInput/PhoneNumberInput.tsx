@@ -31,7 +31,6 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 					_focusWithin={{
 						borderColor: "blue.300",
 					}}
-					data-focus={numberInput.isOpen || undefined}
 					{...numberInput.getRootProps()}
 				>
 					<chakra.button
