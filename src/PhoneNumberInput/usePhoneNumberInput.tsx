@@ -4,7 +4,6 @@ import * as React from "react";
 import { countries } from "./countries";
 import { mergeRefs } from "./mergeRefs";
 import { usePopper } from "./usePopper";
-import { usePaginated } from "./utils";
 
 export interface UsePhoneNumberInputProps {
 	value?: string;
@@ -28,18 +27,6 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 	});
 
 	const popper = usePopper();
-	const paginated = usePaginated(countries);
-	const options = paginated.rows.map((row) => ({
-		label: row.name,
-		value: row,
-	}));
-
-	const items = () => {
-		return options.filter((option) => {
-			option.label.toLowerCase().includes(value.toLowerCase().trim());
-		});
-	};
-
 	const inputRef = React.useRef<HTMLInputElement>(null);
 	const [regionCode, setRegionCode] = React.useState("");
 
@@ -71,7 +58,7 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 
 			ref: userProps.ref
 				? mergeRefs([userProps.ref, popper.refs.setFloating])
-				: popper.refs.setFloating,
+				: mergeRefs([popper.refs.setFloating]),
 
 			style: {
 				...userProps.style,
@@ -147,7 +134,6 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 	return {
 		...popper,
 
-		items,
 		value,
 		onChange,
 		regionCode,

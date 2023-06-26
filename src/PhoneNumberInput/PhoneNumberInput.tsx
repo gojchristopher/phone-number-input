@@ -1,9 +1,10 @@
 import { Avatar, Flex, HTMLChakraProps, chakra, forwardRef } from "@chakra-ui/react";
 import { FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import { CheckCircleIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
-import { countries } from "./countries";
+import { useEffect, useRef } from "react";
 import { Assign } from "./types";
 import { UsePhoneNumberInputProps, usePhoneNumberInput } from "./usePhoneNumberInput";
+import { isScrolledToBottom, usePaginatedCountries } from "./utils";
 
 export interface PhoneNumberInputProps
 	extends Assign<HTMLChakraProps<"input">, UsePhoneNumberInputProps> {}
@@ -15,6 +16,27 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 			onChange,
 			defaultValue,
 		});
+
+		const popupRef = useRef<HTMLDivElement>(null);
+		const paginated = usePaginatedCountries(numberInput.isOpen);
+
+		useEffect(() => {
+			const div = popupRef.current;
+
+			if (!div) return;
+
+			const handleScroll = () => {
+				if (isScrolledToBottom(div)) {
+					paginated.more();
+				}
+			};
+
+			popupRef.current?.addEventListener("scroll", handleScroll);
+
+			return () => {
+				div.removeEventListener("scroll", handleScroll);
+			};
+		}, [paginated]);
 
 		return (
 			<>
@@ -80,21 +102,23 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 							visuallyHiddenDismiss
 						>
 							<chakra.div
+								w="315px"
 								bg="white"
 								border="1px"
 								borderColor="gray.200"
 								rounded="lg"
-								maxW="315px"
 								overflowY="auto"
 								zIndex="modal"
 								outline="none"
-								{...numberInput.getFloatingProps()}
+								scrollBehavior="smooth"
+								{...numberInput.getFloatingProps({
+									ref: popupRef,
+								})}
 							>
-								{countries.slice(0, 25).map((item, index) => {
+								{paginated.rows.map((item, index) => {
 									return (
 										<Flex
 											key={item.code}
-											w="full"
 											py={2}
 											px={3}
 											gap={2}
@@ -111,7 +135,13 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 										>
 											<Avatar src={item.flag} name={item.name} size="xs" />
 
-											<chakra.span pr={4} fontSize="14px" color="gray.900" flexGrow={1}>
+											<chakra.span
+												pr={4}
+												fontSize="14px"
+												color="gray.900"
+												flexGrow={1}
+												lineHeight="normal"
+											>
 												{item.name} (+{item.areaCode})
 											</chakra.span>
 
