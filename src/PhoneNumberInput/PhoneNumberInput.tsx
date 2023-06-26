@@ -74,6 +74,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 							context={numberInput.context}
 							initialFocus={-1}
 							visuallyHiddenDismiss
+							returnFocus={false}
 						>
 							<chakra.div
 								bg="white"
@@ -100,7 +101,7 @@ export const PhoneNumberInput = forwardRef<PhoneNumberInputProps, "input">(
 												index,
 											})}
 										>
-											<Avatar src={item.flag} name="" size="xs" />
+											<Avatar src={item.flag} name={item.name} size="xs" />
 
 											<chakra.span pr={4} fontSize="14px" color="gray.900" flexGrow={1}>
 												{item.name} (+{item.areaCode})
