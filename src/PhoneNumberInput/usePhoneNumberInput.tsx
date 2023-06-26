@@ -86,6 +86,16 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 			popper.listRef.current[index] = node;
 		};
 
+		function handleSelect() {
+			setRegionCode(item.code);
+
+			popper.setOpen(false);
+			popper.setActiveIndex(null);
+
+			onChange(prefix + item.areaCode);
+			inputRef.current?.focus();
+		}
+
 		return popper.getItemProps({
 			...userProps,
 
@@ -93,14 +103,16 @@ export function usePhoneNumberInput(props: UsePhoneNumberInputProps) {
 			role: "option",
 			tabIndex: index === popper.activeIndex ? 0 : -1,
 			onClick(e: React.MouseEvent<HTMLDivElement>) {
-				setRegionCode(item.code);
-
-				popper.setOpen(false);
-				popper.setActiveIndex(null);
-
-				onChange(prefix + item.areaCode);
-				inputRef.current?.focus();
+				handleSelect();
 				userProps.onClick?.(e);
+			},
+			onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+				if (e.key === "Enter") {
+					e.preventDefault();
+
+					handleSelect();
+					userProps.onKeyDown?.(e);
+				}
 			},
 			"aria-selected": popper.activeIndex === index || undefined,
 		});
